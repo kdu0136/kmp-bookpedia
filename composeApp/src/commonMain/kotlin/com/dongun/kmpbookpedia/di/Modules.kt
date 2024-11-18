@@ -5,6 +5,7 @@ import com.dongun.kmpbookpedia.book.data.network.RemoteBookDataSource
 import com.dongun.kmpbookpedia.book.data.repository.DefaultBookRepository
 import com.dongun.kmpbookpedia.book.domain.BookRepository
 import com.dongun.kmpbookpedia.book.presentation.SelectedBookViewModel
+import com.dongun.kmpbookpedia.book.presentation.book_detail.BookDetailViewModel
 import com.dongun.kmpbookpedia.book.presentation.book_list.BookListViewModel
 import com.dongun.kmpbookpedia.core.data.HttpClientFactory
 import org.koin.core.module.Module
@@ -21,5 +22,6 @@ val sharedModule = module {
     singleOf(::DefaultBookRepository).bind<BookRepository>()
 
     viewModelOf(::BookListViewModel)
+    viewModelOf(::BookDetailViewModel)
     viewModelOf(::SelectedBookViewModel)
 }
