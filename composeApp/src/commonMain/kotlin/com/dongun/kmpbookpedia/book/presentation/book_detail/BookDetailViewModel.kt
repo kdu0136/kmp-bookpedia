@@ -9,6 +9,8 @@ import com.dongun.kmpbookpedia.book.domain.BookRepository
 import com.dongun.kmpbookpedia.core.domain.onSuccess
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -23,6 +25,7 @@ class BookDetailViewModel(
     private val _state = MutableStateFlow(BookDetailState())
     val state = _state
         .onStart {
+            observeFavoriteStatus()
             fetchBookDescription()
         }
         .stateIn(
@@ -35,7 +38,15 @@ class BookDetailViewModel(
         when (action) {
             BookDetailAction.OnBackClick -> Unit
             BookDetailAction.OnFavoriteClick -> {
-
+                viewModelScope.launch {
+                    if (state.value.isFavorite) {
+                        bookRepository.deleteFromFavorites(bookId)
+                    } else {
+                        state.value.book?.let { book ->
+                            bookRepository.markAsFavorite(book)
+                        }
+                    }
+                }
             }
 
             is BookDetailAction.OnSelectedBookChange -> {
@@ -44,6 +55,17 @@ class BookDetailViewModel(
                 }
             }
         }
+    }
+
+    private fun observeFavoriteStatus() {
+        bookRepository
+            .isBookFavorite(bookId)
+            .onEach { isFavorite ->
+                _state.update {
+                    it.copy(isFavorite = isFavorite)
+                }
+            }
+            .launchIn(viewModelScope)
     }
 
     private fun fetchBookDescription() {
