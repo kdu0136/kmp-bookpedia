@@ -1,5 +1,6 @@
 package com.dongun.kmpbookpedia.book.data.network
 
+import com.dongun.kmpbookpedia.book.data.dto.BookWorkDto
 import com.dongun.kmpbookpedia.book.data.dto.SearchResponseDto
 import com.dongun.kmpbookpedia.core.domain.DataError
 import com.dongun.kmpbookpedia.core.domain.Result
@@ -9,4 +10,6 @@ interface RemoteBookDataSource {
         query: String,
         resultLimit: Int? = null,
     ): Result<SearchResponseDto, DataError.Remote>
+
+    suspend fun getBookDetails(bookWorkId: String): Result<BookWorkDto, DataError.Remote>
 }
